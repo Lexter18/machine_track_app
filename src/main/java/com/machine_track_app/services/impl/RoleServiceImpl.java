@@ -12,9 +12,12 @@ import java.util.stream.Collectors;
 @Service
 public class RoleServiceImpl implements RoleService {
 
+    private final RoleRepository roleRepository;
 
     @Autowired
-    private RoleRepository roleRepository;
+    public RoleServiceImpl(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
     @Override
     public List<RoleDTO> getRoles() {
@@ -23,6 +26,7 @@ public class RoleServiceImpl implements RoleService {
                 .map(role -> RoleDTO.builder()
                         .idRole(role.getIdRole())
                         .role(role.getRole())
+                        .roleDescription(role.getRoleDescription())
                         .build())
                 .collect(Collectors.toList());
     }

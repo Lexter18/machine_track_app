@@ -4,6 +4,8 @@ import com.machine_track_app.dto.response.*;
 import com.machine_track_app.entities.*;
 import lombok.experimental.UtilityClass;
 
+import java.util.Optional;
+
 @UtilityClass
 public class UserMapper {
 
@@ -14,6 +16,7 @@ public class UserMapper {
                 .employee(toEmployeeDto(user.getEmployee()))
                 .state(toStateDto(user.getState()))
                 .role(toRoleDto(user.getRole()))
+                .owner(toOwnerDto(user.getEmployee().getOwner()))
                 .build();
     }
 
@@ -46,6 +49,7 @@ public class UserMapper {
         return RoleDTO.builder()
                 .idRole(role.getIdRole())
                 .role(role.getRole())
+                .roleDescription(role.getRoleDescription())
                 .build();
     }
 
@@ -62,5 +66,16 @@ public class UserMapper {
                                 .build())
                         .build())
                 .build();
+    }
+
+     public static OwnerDTO toOwnerDto(Owner owner) {
+        return Optional.ofNullable(owner)
+                .map(o -> OwnerDTO.builder()
+                        .idOwner(o.getIdOwner())
+                        .owner(o.getOwner())
+                        .identification(o.getIdentification())
+                        .identificationType(o.getIdentificationType().name())
+                        .build())
+                .orElseGet(() -> OwnerDTO.builder().build());
     }
 }

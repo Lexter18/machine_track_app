@@ -12,9 +12,12 @@ public class MessageUtil {
     public static final String PHONE_REQUIRED = "El telefono es requerido";
     public static final String USER_VALIDATION = "El nombre de usuario ya está en uso";
     public static final String USER_REQUIRED = "El usuario es requerido";
+    public static final String PASSWORD_REQUIRED = "El password es requerido";
     public static final String EMAIL_VALIDATION = "El email ya está en uso";
     public static final String EMAIL_REQUIRED = "El email es requerido";
     public static final String POSITION_REQUIRED = "El cargo es requerido";
+    public static final String MUNICIPALITY_REQUIRED = "La ciudad es requerida";
+    public static final String DATA_VALIDATION_ERROR = "Error validacion de datos";
 
 
 }

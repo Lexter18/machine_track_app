@@ -14,7 +14,7 @@ public class CommonExceptionsHandler {
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<?> handleValidationException(ValidationException ex) {
-        log.error(ex.getMessage());
+        log.error(ex.getErrors().toString());
         var error = ResponsePayload.builder()
                 .code(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .description(ex.getMessage())

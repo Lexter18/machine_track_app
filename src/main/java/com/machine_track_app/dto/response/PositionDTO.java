@@ -5,10 +5,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class RoleDTO {
+public class PositionDTO {
 
-    private Integer idRole;
-    private String role;
-    private String roleDescription;
+    private Integer idPosition;
+    private String position;
 
 }

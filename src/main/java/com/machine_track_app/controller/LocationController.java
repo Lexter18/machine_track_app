@@ -17,9 +17,12 @@ import java.util.List;
 @RequestMapping("/api/locations")
 public class LocationController {
 
+    private final LocationService locationService;
 
     @Autowired
-    private LocationService locationService;
+    public LocationController(LocationService locationService) {
+        this.locationService = locationService;
+    }
 
     @GetMapping("/countries")
     public ResponseEntity<List<Country>> getAllCountries() {

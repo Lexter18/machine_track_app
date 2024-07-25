@@ -15,16 +15,27 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    @Autowired
-    private UserService userService;
+
+
+    private final UserService userService;
+    private final RoleService roleService;
 
     @Autowired
-    private RoleService roleService;
+    public UserController(UserService userService, RoleService roleService) {
+        this.userService = userService;
+        this.roleService = roleService;
+    }
 
 
     @GetMapping("/byOwner")
     public ResponseEntity<List<?>> getAllUsersByOwner() {
         List<UserDTO> users = userService.getAllUsersByOwner();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/byRole/{idRole}")
+    public ResponseEntity<List<?>> getAllUserByRole(@PathVariable Integer idRole) {
+        List<UserDTO> users = userService.getAllOwnerUser(idRole);
         return ResponseEntity.ok(users);
     }
 
@@ -41,7 +52,7 @@ public class UserController {
 //                .orElse(ResponseEntity.notFound().build());
 //    }
 
-    @PostMapping
+    @PostMapping("/initialRegistration")
     public ResponseEntity<?> initialRegistration(@RequestBody InitialRegistrationRequestPayload initialRegistration) {
         var createdUser = userService.initialRegistration(initialRegistration);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);

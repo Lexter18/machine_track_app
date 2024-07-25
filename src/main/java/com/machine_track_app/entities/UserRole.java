@@ -20,6 +20,9 @@ public class UserRole {
     @Column(name = "rol", nullable = false)
     private String role;
 
+    @Column(name = "role_description")
+    private String roleDescription;
+
     private LocalDateTime creation;
 
 }

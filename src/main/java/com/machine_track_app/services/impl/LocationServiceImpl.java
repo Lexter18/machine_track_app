@@ -16,12 +16,17 @@ import java.util.List;
 @Service
 public class LocationServiceImpl implements LocationService {
 
+
+    private final CountryRepository countryRepository;
+    private final DepartmentRepository departmentRepository;
+    private final MunicipalityRepository municipalityRepository;
+
     @Autowired
-    private CountryRepository countryRepository;
-    @Autowired
-    private DepartmentRepository departmentRepository;
-    @Autowired
-    private MunicipalityRepository municipalityRepository;
+    public LocationServiceImpl(CountryRepository countryRepository, DepartmentRepository departmentRepository, MunicipalityRepository municipalityRepository) {
+        this.countryRepository = countryRepository;
+        this.departmentRepository = departmentRepository;
+        this.municipalityRepository = municipalityRepository;
+    }
 
 
     @Override

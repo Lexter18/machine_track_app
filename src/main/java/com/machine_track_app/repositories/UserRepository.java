@@ -21,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
                                                                                            Integer excludedStateId,
                                                                                            Integer excludedUserStateId);
 
+    List<User> findAllByRoleIdRole(Integer idRole);
+
     default List<User> findByEmployee_Owner(Long ownerId) {
         return findByEmployee_Owner_IdOwnerAndEmployee_State_IdStateNotAndState_IdStateNot(ownerId,
                 DELETED.getState(),

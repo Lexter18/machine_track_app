@@ -1,6 +1,7 @@
 package com.machine_track_app.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.machine_track_app.entities.Owner;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,5 +15,6 @@ public class UserDTO {
     private StateDTO state;
     private EmpleyeeDTO employee;
     private RoleDTO role;
+    private OwnerDTO owner;
 
 }

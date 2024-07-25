@@ -4,6 +4,7 @@ import com.machine_track_app.dto.request.InitialRegistrationRequestPayload;
 import com.machine_track_app.dto.response.*;
 import com.machine_track_app.entities.*;
 import com.machine_track_app.enums.IdentificationTypeEmployee;
+import com.machine_track_app.enums.PositionsEnum;
 import com.machine_track_app.enums.StateApp;
 import com.machine_track_app.exceptions.MachinTrackException;
 import com.machine_track_app.exceptions.ValidationException;
@@ -25,6 +26,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static ch.qos.logback.core.util.OptionHelper.isNullOrEmpty;
+import static com.machine_track_app.utils.ConstantsUtils.ROLE_OWNER;
 import static com.machine_track_app.utils.MessageUtil.*;
 import static com.machine_track_app.utils.SecurityUtils.getCurrentOwnerId;
 
@@ -33,13 +35,18 @@ import static com.machine_track_app.utils.SecurityUtils.getCurrentOwnerId;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private EmployeeRepository employeeRepository;
+
+    private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserServiceImpl(UserRepository userRepository, EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.employeeRepository = employeeRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -52,14 +59,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
-    }
-
-    @Override
-    public User createUser(InitialRegistrationRequestPayload user) {
-        return null;
+    public List<UserDTO> getAllOwnerUser(Integer idRole) {
+        var user = userRepository.findAllByRoleIdRole(idRole);
+        return user.stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -71,12 +75,9 @@ public class UserServiceImpl implements UserService {
             var errors = validateRegistration(initialRegistration);
             if (errors.isEmpty()) {
                 var date = LocalDateTime.now();
-                Owner owner = Owner.builder()
-                        .idOwner(initialRegistration.getIdOwner())
-                        .build();
 
                 UserRole role = UserRole.builder()
-                        .idRole(initialRegistration.getIdRole())
+                        .idRole(ROLE_OWNER)
                         .build();
 
                 State state = State.builder()
@@ -88,7 +89,7 @@ public class UserServiceImpl implements UserService {
                         .build();
 
                 Position position = Position.builder()
-                        .idPosition(initialRegistration.getIdPosition())
+                        .idPosition(PositionsEnum.ADMINISTRATOR.getPosition())
                         .build();
 
                 Employee employee = Employee.builder()
@@ -102,7 +103,6 @@ public class UserServiceImpl implements UserService {
                         .identification(initialRegistration.getIdentification())
                         .identificationType(IdentificationTypeEmployee.valueOf(initialRegistration.getIdentificationType()))
                         .state(state)
-                        .owner(owner)
                         .municipality(municipality)
                         .position(position)
                         .build();
@@ -130,25 +130,13 @@ public class UserServiceImpl implements UserService {
             throw new ValidationException(errors);
 
         } catch (ValidationException ex) {
-            log.error(ex.getMessage());
+            log.error(DATA_VALIDATION_ERROR);
             throw ex;
         } catch (Exception ex) {
             var msn = "Error ejecutando el registro inicial de usuarios ";
             log.error(msn.concat(ex.getMessage()));
             throw new MachinTrackException(msn, ex);
         }
-    }
-
-    @Override
-    @Transactional
-    public User updateUser(Long id, User user) {
-        return null;
-    }
-
-    @Override
-    @Transactional
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
     }
 
     private List<String> validateRegistration(InitialRegistrationRequestPayload registration) {
@@ -159,9 +147,10 @@ public class UserServiceImpl implements UserService {
                 () -> isNullOrEmpty(registration.getIdentificationType()) ? Optional.of(TYPE_ID_REQUIRED) : Optional.empty(),
                 () -> isNullOrEmpty(registration.getPhone()) ? Optional.of(PHONE_REQUIRED) : Optional.empty(),
                 () -> isNullOrEmpty(registration.getUsername()) ? Optional.of(USER_REQUIRED) : Optional.empty(),
+                () -> isNullOrEmpty(registration.getPassword()) ? Optional.of(PASSWORD_REQUIRED) : Optional.empty(),
                 () -> isNullOrEmpty(registration.getEmail()) ? Optional.of(EMAIL_REQUIRED) : Optional.empty(),
-                () -> Optional.ofNullable(registration.getIdPosition()).map(Object::toString)
-                        .isPresent() ? Optional.empty() : Optional.of(POSITION_REQUIRED),
+                () -> Optional.ofNullable(registration.getIdMunicipality()).map(Object::toString)
+                        .isPresent() ? Optional.empty() : Optional.of(MUNICIPALITY_REQUIRED),
                 () -> userRepository.countByUserName(registration.getUsername()) > 0 ? Optional.of(USER_VALIDATION) : Optional.empty(),
                 () -> employeeRepository.countByEmail(registration.getEmail()) > 0 ? Optional.of(EMAIL_VALIDATION) : Optional.empty()
         );
@@ -173,7 +162,4 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
-    private static <T> Predicate<T> not(Predicate<T> predicate) {
-        return predicate.negate();
-    }
 }

@@ -1,10 +1,12 @@
 package com.machine_track_app.auth;
 
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
 
+@Getter
 public class CustomUserDetails extends User {
 
     private final Long idOwner;
@@ -19,7 +21,4 @@ public class CustomUserDetails extends User {
         this.idOwner = idOwner;
     }
 
-    public Long getIdOwner() {
-        return idOwner;
-    }
 }

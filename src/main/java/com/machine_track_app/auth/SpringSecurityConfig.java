@@ -3,6 +3,7 @@ package com.machine_track_app.auth;
 import com.machine_track_app.auth.filters.JwtAuthenticationFilter;
 import com.machine_track_app.auth.filters.JwtValidationFilter;
 
+import com.machine_track_app.enums.RolesEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -34,12 +35,19 @@ public class SpringSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(authRules -> authRules
                         .requestMatchers(HttpMethod.GET, "/api/locations/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/users/roles").permitAll()
-                        //.requestMatchers(HttpMethod.GET, "/api/users/owner").hasRole("OPERATOR")
-                        .requestMatchers(HttpMethod.GET, "/api/users").hasRole("OWNER")
-                        .requestMatchers(HttpMethod.GET, "/api/users/{id}").hasRole("OWNER")
-                        .requestMatchers(HttpMethod.POST, "/api/users").hasRole("OWNER")
 
+                        .requestMatchers(HttpMethod.POST, "/api/users/initialRegistration").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasRole(RolesEnum.OWNER.name())
+                        .requestMatchers(HttpMethod.POST, "/api/users").hasRole(RolesEnum.OWNER.name())
+                        .requestMatchers(HttpMethod.GET, "/api/users/roles")
+                        .hasAnyRole(RolesEnum.OWNER.name(), RolesEnum.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/users/byRole/{id}").hasRole(RolesEnum.ADMIN.name())
+
+                        .requestMatchers(HttpMethod.GET, "/api/state")
+                        .hasAnyRole(RolesEnum.OWNER.name(), RolesEnum.ADMIN.name())
+
+                        .requestMatchers(HttpMethod.GET, "/api/position")
+                        .hasAnyRole(RolesEnum.OWNER.name(), RolesEnum.ADMIN.name())
 
                         //.requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("OWNER")
                         .anyRequest().authenticated()

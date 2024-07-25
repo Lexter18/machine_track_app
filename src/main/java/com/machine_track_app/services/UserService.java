@@ -14,13 +14,8 @@ public interface UserService {
 
     List<UserDTO> getAllUsersByOwner();
 
-    Optional<User> getUserById(Long id);
+    List<UserDTO> getAllOwnerUser(Integer idRole);
 
-    User createUser(InitialRegistrationRequestPayload user);
-
-    User updateUser(Long id, User user);
-
-    void deleteUser(Long id);
 }
 
 
