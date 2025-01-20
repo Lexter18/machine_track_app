@@ -1,10 +1,11 @@
 package com.machine_track_app.services.impl;
 
-import com.machine_track_app.dto.request.InitialRegistrationRequestPayload;
+import com.machine_track_app.dto.request.UserRequestPayload;
 import com.machine_track_app.dto.response.*;
 import com.machine_track_app.entities.*;
 import com.machine_track_app.enums.IdentificationTypeEmployee;
 import com.machine_track_app.enums.PositionsEnum;
+import com.machine_track_app.enums.RolesEnum;
 import com.machine_track_app.enums.StateApp;
 import com.machine_track_app.exceptions.MachinTrackException;
 import com.machine_track_app.exceptions.ValidationException;
@@ -21,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -59,8 +59,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDTO> getAllOwnerUser(Integer idRole) {
-        var user = userRepository.findAllByRoleIdRole(idRole);
+    public List<UserDTO> getAllOwnerUser() {
+        var user = userRepository.findAllByRoleIdRole(RolesEnum.OWNER.getRol());
         return user.stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ResponsePayload initialRegistration(InitialRegistrationRequestPayload initialRegistration) {
+    public ResponsePayload initialRegistration(UserRequestPayload initialRegistration) {
         try {
             log.info("initialRegistration -> {}", initialRegistration);
 
@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private List<String> validateRegistration(InitialRegistrationRequestPayload registration) {
+    private List<String> validateRegistration(UserRequestPayload registration) {
         List<Supplier<Optional<String>>> checks = List.of(
                 () -> isNullOrEmpty(registration.getFirstName()) ? Optional.of(FIRST_NAME_REQUIRED) : Optional.empty(),
                 () -> isNullOrEmpty(registration.getFirstSurname()) ? Optional.of(FIRST_LAST_NAME_REQUIRED) : Optional.empty(),

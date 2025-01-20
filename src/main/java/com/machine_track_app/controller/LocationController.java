@@ -6,10 +6,7 @@ import com.machine_track_app.entities.Municipality;
 import com.machine_track_app.services.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,15 +27,15 @@ public class LocationController {
         return ResponseEntity.ok(countries);
     }
 
-    @GetMapping("/departments/{countryId}")
-    public ResponseEntity<List<Department>> getDepartmentsByCountryId(@PathVariable Long countryId) {
-        List<Department> departments = locationService.getDepartmentsByCountryId(countryId);
+    @GetMapping("/departments")
+    public ResponseEntity<List<Department>> getDepartmentsByCountryId(@RequestParam Long idCountry) {
+        List<Department> departments = locationService.getDepartmentsByCountryId(idCountry);
         return ResponseEntity.ok(departments);
     }
 
-    @GetMapping("/municipalities/{departmentId}")
-    public ResponseEntity<List<Municipality>> getMunicipalitiesByDepartmentId(@PathVariable Long departmentId) {
-        List<Municipality> municipalities = locationService.getMunicipalitiesByDepartmentId(departmentId);
+    @GetMapping("/municipalities")
+    public ResponseEntity<List<Municipality>> getMunicipalitiesByDepartmentId(@RequestParam Long idDepartment) {
+        List<Municipality> municipalities = locationService.getMunicipalitiesByDepartmentId(idDepartment);
         return ResponseEntity.ok(municipalities);
     }
 }

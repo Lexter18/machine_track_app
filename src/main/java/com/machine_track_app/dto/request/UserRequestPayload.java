@@ -1,18 +1,25 @@
 package com.machine_track_app.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class UserRequestPayload {
-    @JsonProperty("username")
-    private String userName;
+
+    private String firstName;
+    private String middleName;
+    private String firstSurname;
+    private String secondSurname;
+    private String identification;
+    private String identificationType;
+    private String username;
     private String password;
+    private String email;
+    private String phone;
+    private Long idOwner;
+    private Integer idRole;
+    private Long idMunicipality;
+    private Integer idPosition;
 
 }

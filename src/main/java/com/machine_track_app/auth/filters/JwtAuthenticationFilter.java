@@ -2,7 +2,7 @@ package com.machine_track_app.auth.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.machine_track_app.auth.CustomUserDetails;
-import com.machine_track_app.dto.request.UserRequestPayload;
+import com.machine_track_app.dto.request.UserAuthRequestPayload;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,7 +25,7 @@ import static com.machine_track_app.utils.SecurityUtils.*;
 @Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
@@ -34,9 +34,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
-        UserRequestPayload userRequestPayload;
+        UserAuthRequestPayload userRequestPayload;
         try {
-            userRequestPayload = new ObjectMapper().readValue(request.getInputStream(), UserRequestPayload.class);
+            userRequestPayload = new ObjectMapper().readValue(request.getInputStream(), UserAuthRequestPayload.class);
         } catch (IOException e) {
             log.error(e.getMessage());
             throw new RuntimeException(e);

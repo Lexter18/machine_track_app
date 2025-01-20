@@ -1,6 +1,6 @@
 package com.machine_track_app.controller;
 
-import com.machine_track_app.dto.request.InitialRegistrationRequestPayload;
+import com.machine_track_app.dto.request.UserRequestPayload;
 import com.machine_track_app.dto.response.RoleDTO;
 import com.machine_track_app.dto.response.UserDTO;
 import com.machine_track_app.services.RoleService;
@@ -33,9 +33,9 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/byRole/{idRole}")
-    public ResponseEntity<List<?>> getAllUserByRole(@PathVariable Integer idRole) {
-        List<UserDTO> users = userService.getAllOwnerUser(idRole);
+    @GetMapping("/owners")
+    public ResponseEntity<List<?>> getAllUserByRole() {
+        List<UserDTO> users = userService.getAllOwnerUser();
         return ResponseEntity.ok(users);
     }
 
@@ -45,33 +45,10 @@ public class UserController {
         return ResponseEntity.ok(roles);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-//        return userService.getUserById(id)
-//                .map(ResponseEntity::ok)
-//                .orElse(ResponseEntity.notFound().build());
-//    }
-
     @PostMapping("/initialRegistration")
-    public ResponseEntity<?> initialRegistration(@RequestBody InitialRegistrationRequestPayload initialRegistration) {
+    public ResponseEntity<?> initialRegistration(@RequestBody UserRequestPayload initialRegistration) {
         var createdUser = userService.initialRegistration(initialRegistration);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
-//
-//    @PutMapping("/{id}")
-//    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-//        User updatedUser = userService.updateUser(id, user);
-//        if (updatedUser != null) {
-//            return ResponseEntity.ok(updatedUser);
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-//        userService.deleteUser(id);
-//        return ResponseEntity.noContent().build();
-//    }
 
 }

@@ -28,8 +28,12 @@ import java.util.List;
 @Configuration
 public class SpringSecurityConfig {
 
+    private final AuthenticationConfiguration authenticationConfiguration;
+
     @Autowired
-    private AuthenticationConfiguration authenticationConfiguration;
+    public SpringSecurityConfig(AuthenticationConfiguration authenticationConfiguration) {
+        this.authenticationConfiguration = authenticationConfiguration;
+    }
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,19 +41,14 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/locations/**").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/users/initialRegistration").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/users").hasRole(RolesEnum.OWNER.name())
-                        .requestMatchers(HttpMethod.POST, "/api/users").hasRole(RolesEnum.OWNER.name())
+                        .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole(RolesEnum.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/api/users/roles")
                         .hasAnyRole(RolesEnum.OWNER.name(), RolesEnum.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/users/byRole/{id}").hasRole(RolesEnum.ADMIN.name())
 
                         .requestMatchers(HttpMethod.GET, "/api/state")
                         .hasAnyRole(RolesEnum.OWNER.name(), RolesEnum.ADMIN.name())
-
                         .requestMatchers(HttpMethod.GET, "/api/position")
                         .hasAnyRole(RolesEnum.OWNER.name(), RolesEnum.ADMIN.name())
-
-                        //.requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("OWNER")
                         .anyRequest().authenticated()
                 )
                 .addFilter(new JwtAuthenticationFilter(authenticationConfiguration.getAuthenticationManager()))
@@ -73,7 +72,7 @@ public class SpringSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         corsConfiguration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         corsConfiguration.setAllowCredentials(true);

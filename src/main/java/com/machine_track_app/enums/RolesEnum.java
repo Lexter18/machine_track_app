@@ -12,5 +12,5 @@ public enum RolesEnum {
     SUPERVISOR(3),
     OWNER(4);
 
-    final int rol;
+    final Integer rol;
 }

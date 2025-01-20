@@ -24,6 +24,7 @@ public class EmpleyeeDTO {
     private LocalDateTime modification;
     private String identificationType;
     private StateDTO state;
+    private PositionDTO position;
 
 
 }

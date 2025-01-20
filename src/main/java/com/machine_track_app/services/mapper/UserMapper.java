@@ -35,6 +35,7 @@ public class UserMapper {
                 .identification(employee.getIdentification())
                 .municipality(toMunicipalityDto(employee.getMunicipality()))
                 .state(toStateDto(employee.getState()))
+                .position(toPositionDTO(employee.getPosition()))
                 .build();
     }
 
@@ -77,5 +78,14 @@ public class UserMapper {
                         .identificationType(o.getIdentificationType().name())
                         .build())
                 .orElseGet(() -> OwnerDTO.builder().build());
+    }
+
+    public static PositionDTO toPositionDTO(Position position) {
+        return Optional.ofNullable(position)
+                .map(p -> PositionDTO.builder()
+                        .idPosition(p.getIdPosition())
+                        .position(p.getPosition())
+                        .build())
+                .orElseGet(() -> PositionDTO.builder().build());
     }
 }
