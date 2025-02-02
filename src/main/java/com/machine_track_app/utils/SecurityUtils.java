@@ -4,10 +4,12 @@ import com.machine_track_app.auth.CustomAuthenticationToken;
 import io.jsonwebtoken.Jwts;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.crypto.SecretKey;
 
+import static com.machine_track_app.utils.ConstantsUtils.ZERO_INT;
 import static com.machine_track_app.utils.ConstantsUtils.ZERO_LONG;
 
 @UtilityClass
@@ -24,5 +26,13 @@ public class SecurityUtils {
             return ((CustomAuthenticationToken) authentication).getIdOwner();
         }
         return ZERO_LONG;
+    }
+
+    public static Integer getCurrentRol() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof CustomAuthenticationToken) {
+            return ((CustomAuthenticationToken) authentication).getIdRol();
+        }
+        return ZERO_INT;
     }
 }

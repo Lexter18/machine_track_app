@@ -1,6 +1,8 @@
 package com.machine_track_app.services.impl;
 
 import com.machine_track_app.auth.CustomUserDetails;
+import com.machine_track_app.entities.Employee;
+import com.machine_track_app.entities.Owner;
 import com.machine_track_app.entities.User;
 import com.machine_track_app.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.machine_track_app.utils.ConstantsUtils.ZERO_LONG;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -33,7 +37,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         Optional<User> userOptional = userRepository.findByUserName(username);
         User user = userOptional.orElseThrow(() -> new UsernameNotFoundException("El usuario no existe"));
-        var idOwner = user.getEmployee().getOwner().getIdOwner();
+        var idOwner = Optional.ofNullable(user)
+                .map(User::getEmployee)
+                .map(Employee::getOwner)
+                .map(Owner::getIdOwner)
+                .orElse(ZERO_LONG);
+        var idRole = user.getRole().getIdRole();
 
         List<GrantedAuthority> authorities = userOptional.map(com.machine_track_app.entities.User::getRole)
                 .stream()
@@ -41,7 +50,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .collect(Collectors.toList());
 
         return new CustomUserDetails(user.getUserName(), user.getPassword(), true, true,
-                true, true, authorities, idOwner);
+                true, true, authorities, idOwner, idRole);
 
     }
 }

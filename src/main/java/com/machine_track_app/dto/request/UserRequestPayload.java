@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class UserRequestPayload {
 
     private String firstName;
@@ -21,5 +21,6 @@ public class UserRequestPayload {
     private Integer idRole;
     private Long idMunicipality;
     private Integer idPosition;
+    private int idState;
 
 }

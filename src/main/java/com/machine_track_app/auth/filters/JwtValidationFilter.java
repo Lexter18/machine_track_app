@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.machine_track_app.utils.ConstantsUtils.ZERO_INT;
+import static com.machine_track_app.utils.ConstantsUtils.ZERO_LONG;
 import static com.machine_track_app.utils.SecurityUtils.*;
 
 public class JwtValidationFilter extends BasicAuthenticationFilter {
@@ -49,14 +51,19 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
             var owner = Optional.ofNullable(claims.get("owner"))
                     .map(Object::toString)
                     .map(Long::parseLong)
-                    .orElse(0L);
+                    .orElse(ZERO_LONG);
+
+            var rol = Optional.ofNullable(claims.get("rol"))
+                    .map(Object::toString)
+                    .map(Integer::parseInt)
+                    .orElse(ZERO_INT);
 
             Collection<GrantedAuthority> authorities = authorityMaps.stream()
                     .map(map -> new SimpleGrantedAuthority(map.get("authority")))
                     .collect(Collectors.toList());
 
             CustomAuthenticationToken authenticationToken =
-                    new CustomAuthenticationToken(claims.getSubject(), null, authorities, owner);
+                    new CustomAuthenticationToken(claims.getSubject(), null, authorities, owner, rol);
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             chain.doFilter(request, response);

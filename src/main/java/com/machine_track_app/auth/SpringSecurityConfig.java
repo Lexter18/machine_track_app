@@ -38,17 +38,13 @@ public class SpringSecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(authRules -> authRules
-                        .requestMatchers(HttpMethod.GET, "/api/locations/**").permitAll()
-
-                        .requestMatchers(HttpMethod.POST, "/api/users/initialRegistration").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole(RolesEnum.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/api/users/manager").hasRole(RolesEnum.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/api/users/roles")
                         .hasAnyRole(RolesEnum.OWNER.name(), RolesEnum.ADMIN.name())
-
-                        .requestMatchers(HttpMethod.GET, "/api/state")
-                        .hasAnyRole(RolesEnum.OWNER.name(), RolesEnum.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/position")
-                        .hasAnyRole(RolesEnum.OWNER.name(), RolesEnum.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/users/owners").hasRole(RolesEnum.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/owners").hasRole(RolesEnum.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/locations/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/initialRegistration").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilter(new JwtAuthenticationFilter(authenticationConfiguration.getAuthenticationManager()))

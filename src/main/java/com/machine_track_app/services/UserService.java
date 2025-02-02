@@ -10,7 +10,7 @@ public interface UserService {
 
     ResponsePayload initialRegistration(UserRequestPayload user);
 
-    List<UserDTO> getAllUsersByOwner();
+    ResponsePayload createUser(UserRequestPayload user);
 
     List<UserDTO> getAllOwnerUser();
 

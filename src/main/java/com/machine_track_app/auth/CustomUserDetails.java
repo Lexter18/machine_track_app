@@ -10,15 +10,22 @@ import java.util.Collection;
 public class CustomUserDetails extends User {
 
     private final Long idOwner;
-    public CustomUserDetails(String username, String password, Collection<? extends GrantedAuthority> authorities, Long idOwner) {
+    private final Integer idRol;
+
+    public CustomUserDetails(String username, String password, Collection<? extends GrantedAuthority> authorities,
+                             Long idOwner, Integer idRol) {
         super(username, password, authorities);
         this.idOwner = idOwner;
+        this.idRol = idRol;
     }
 
     public CustomUserDetails(String username, String password, boolean enabled, boolean accountNonExpired,
-                             boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, Long idOwner) {
+                             boolean credentialsNonExpired,
+                             boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities,
+                             Long idOwner, Integer idRol) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
         this.idOwner = idOwner;
+        this.idRol = idRol;
     }
 
 }

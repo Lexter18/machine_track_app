@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static ch.qos.logback.core.util.OptionHelper.isNullOrEmpty;
-import static com.machine_track_app.utils.ConstantsUtils.ROLE_OWNER;
+import static com.machine_track_app.enums.RolesEnum.OWNER;
 import static com.machine_track_app.utils.MessageUtil.*;
 import static com.machine_track_app.utils.SecurityUtils.getCurrentOwnerId;
 
@@ -47,20 +47,9 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserDTO> getAllUsersByOwner() {
-        var idOwner = getCurrentOwnerId();
-        var user = userRepository.findByEmployee_Owner(idOwner);
-        return user.stream()
-                .map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
-    }
-
     @Override
     public List<UserDTO> getAllOwnerUser() {
-        var user = userRepository.findAllByRoleIdRole(RolesEnum.OWNER.getRol());
+        var user = userRepository.findAllByRoleIdRole(OWNER.getRol());
         return user.stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
@@ -71,59 +60,40 @@ public class UserServiceImpl implements UserService {
     public ResponsePayload initialRegistration(UserRequestPayload initialRegistration) {
         try {
             log.info("initialRegistration -> {}", initialRegistration);
-
             var errors = validateRegistration(initialRegistration);
             if (errors.isEmpty()) {
-                var date = LocalDateTime.now();
-
-                UserRole role = UserRole.builder()
-                        .idRole(ROLE_OWNER)
-                        .build();
-
-                State state = State.builder()
+                var user = initialRegistration.toBuilder()
                         .idState(StateApp.DISABLED.getState())
+                        .idRole(OWNER.getRol())
                         .build();
 
-                Municipality municipality = Municipality.builder()
-                        .idMunicipality(initialRegistration.getIdMunicipality())
+                return userManager(user);
+            }
+
+            throw new ValidationException(errors);
+
+        } catch (ValidationException ex) {
+            log.error(DATA_VALIDATION_ERROR);
+            throw ex;
+        } catch (Exception ex) {
+            var msn = "Error executing initial user registration. " + ex.getMessage();
+            log.error(msn, ex);
+            throw new MachinTrackException(msn, ex);
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResponsePayload createUser(UserRequestPayload user) {
+        try {
+            log.info("createUser -> {}", user);
+            var errors = validateRegistration(user);
+            if (errors.isEmpty()) {
+                var userCurrent = user.toBuilder()
+                        .idState(StateApp.ACTIVE.getState())
                         .build();
 
-                Position position = Position.builder()
-                        .idPosition(PositionsEnum.ADMINISTRATOR.getPosition())
-                        .build();
-
-                Employee employee = Employee.builder()
-                        .firstName(initialRegistration.getFirstName())
-                        .middleName(initialRegistration.getMiddleName())
-                        .firstSurname(initialRegistration.getFirstSurname())
-                        .secondSurname(initialRegistration.getSecondSurname())
-                        .email(initialRegistration.getEmail())
-                        .phone(initialRegistration.getPhone())
-                        .creation(date)
-                        .identification(initialRegistration.getIdentification())
-                        .identificationType(IdentificationTypeEmployee.valueOf(initialRegistration.getIdentificationType()))
-                        .state(state)
-                        .municipality(municipality)
-                        .position(position)
-                        .build();
-
-                var currentEmployee = employeeRepository.save(employee);
-                String passwordBCrypt = passwordEncoder.encode(initialRegistration.getPassword());
-                User u = User.builder()
-                        .userName(initialRegistration.getUsername())
-                        .password(passwordBCrypt)
-                        .creation(date)
-                        .state(state)
-                        .employee(currentEmployee)
-                        .role(role)
-                        .build();
-
-                userRepository.save(u);
-                return ResponsePayload.builder()
-                        .code(HttpStatus.CREATED.getReasonPhrase())
-                        .description(SUCCESSFUL_PROCESS_MESSAGE)
-                        .statusCode(HttpStatus.CREATED.value())
-                        .build();
+                return userManager(userCurrent);
 
             }
 
@@ -133,9 +103,73 @@ public class UserServiceImpl implements UserService {
             log.error(DATA_VALIDATION_ERROR);
             throw ex;
         } catch (Exception ex) {
-            var msn = "Error ejecutando el registro inicial de usuarios ";
+            var msn = "Error executing user registration " + ex.getMessage();
             log.error(msn.concat(ex.getMessage()));
             throw new MachinTrackException(msn, ex);
+        }
+    }
+
+    private ResponsePayload userManager(UserRequestPayload user) {
+        try {
+            var date = LocalDateTime.now();
+            UserRole role = UserRole.builder()
+                    .idRole(user.getIdRole())
+                    .build();
+
+            State state = State.builder()
+                    .idState(user.getIdState())
+                    .build();
+
+            Municipality municipality = Municipality.builder()
+                    .idMunicipality(user.getIdMunicipality())
+                    .build();
+
+            var owner = Optional.ofNullable(user.getIdOwner())
+                    .map(id -> Owner.builder().idOwner(id).build())
+                    .orElse(null);
+
+            Employee employee = Employee.builder()
+                    .firstName(user.getFirstName())
+                    .middleName(user.getMiddleName())
+                    .firstSurname(user.getFirstSurname())
+                    .secondSurname(user.getSecondSurname())
+                    .email(user.getEmail())
+                    .phone(user.getPhone())
+                    .creation(date)
+                    .identification(user.getIdentification())
+                    .identificationType(IdentificationTypeEmployee.valueOf(user.getIdentificationType()))
+                    .state(state)
+                    .municipality(municipality)
+                    .owner(owner)
+                    .build();
+
+            var currentEmployee = employeeRepository.save(employee);
+            String passwordBCrypt = passwordEncoder.encode(user.getPassword());
+            User newUser = User.builder()
+                    .userName(user.getUsername())
+                    .password(passwordBCrypt)
+                    .creation(date)
+                    .state(state)
+                    .employee(currentEmployee)
+                    .role(role)
+                    .build();
+
+            userRepository.save(newUser);
+            log.info("User {} successfully registered.", newUser.getUserName());
+            return ResponsePayload.builder()
+                    .code(HttpStatus.CREATED.getReasonPhrase())
+                    .description(USER_CREATION_SUCCESSFUL)
+                    .statusCode(HttpStatus.CREATED.value())
+                    .build();
+
+        } catch (Exception ex) {
+            var errorMessage = USER_CREATION_FAILED + ex.getMessage();
+            log.error(errorMessage, ex);
+            return ResponsePayload.builder()
+                    .code(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                    .description(errorMessage)
+                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .build();
         }
     }
 

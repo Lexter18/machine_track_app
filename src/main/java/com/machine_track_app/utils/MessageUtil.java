@@ -5,6 +5,9 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class MessageUtil {
     public static final String SUCCESSFUL_PROCESS_MESSAGE = "Proceso finalizado con exito";
+    public static final String USER_CREATION_SUCCESSFUL = "Usuario creado exitosamente.";
+    public static final String USER_CREATION_FAILED = "Error registrando usuario: ";
+
     public static final String FIRST_NAME_REQUIRED = "El primer nombre es requerido";
     public static final String FIRST_LAST_NAME_REQUIRED = "El primer apellido es requerido";
     public static final String TYPE_ID_REQUIRED = "El tipo de identificacion es requerido";

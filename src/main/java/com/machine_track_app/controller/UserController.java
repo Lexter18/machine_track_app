@@ -26,15 +26,8 @@ public class UserController {
         this.roleService = roleService;
     }
 
-
-    @GetMapping("/byOwner")
-    public ResponseEntity<List<?>> getAllUsersByOwner() {
-        List<UserDTO> users = userService.getAllUsersByOwner();
-        return ResponseEntity.ok(users);
-    }
-
     @GetMapping("/owners")
-    public ResponseEntity<List<?>> getAllUserByRole() {
+    public ResponseEntity<List<?>> getAllOwnerUser() {
         List<UserDTO> users = userService.getAllOwnerUser();
         return ResponseEntity.ok(users);
     }
@@ -48,6 +41,12 @@ public class UserController {
     @PostMapping("/initialRegistration")
     public ResponseEntity<?> initialRegistration(@RequestBody UserRequestPayload initialRegistration) {
         var createdUser = userService.initialRegistration(initialRegistration);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    }
+
+    @PostMapping("/manager")
+    public ResponseEntity<?> userManager(@RequestBody UserRequestPayload user) {
+        var createdUser = userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 

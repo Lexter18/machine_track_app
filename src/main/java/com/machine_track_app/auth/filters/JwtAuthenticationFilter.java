@@ -54,6 +54,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         var claims = Jwts.claims()
                 .add("authorities", new ObjectMapper().writeValueAsString(roles))
                 .add("owner", user.getIdOwner())
+                .add("rol", user.getIdRol())
                 .build();
 
         long expirationTime = 3600000;
