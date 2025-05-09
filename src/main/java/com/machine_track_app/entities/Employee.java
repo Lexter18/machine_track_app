@@ -30,6 +30,8 @@ public class Employee {
     private String secondSurname;
     private String email;
     private String phone;
+    @Column(name = "owner_initial_detail")
+    private String ownerInitialDetail;
     @ManyToOne
     @JoinColumn(name = "id_municipality")
     private Municipality municipality;

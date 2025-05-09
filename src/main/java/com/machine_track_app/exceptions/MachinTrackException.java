@@ -6,4 +6,8 @@ public class MachinTrackException extends RuntimeException {
         super(message, cause);
     }
 
+    public MachinTrackException(String message) {
+        super(message);
+    }
+
 }

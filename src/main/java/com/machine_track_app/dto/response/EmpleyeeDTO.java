@@ -25,6 +25,7 @@ public class EmpleyeeDTO {
     private String identificationType;
     private StateDTO state;
     private PositionDTO position;
+    private String ownerInitialDetail;
 
 
 }

@@ -12,7 +12,13 @@ public interface UserService {
 
     ResponsePayload createUser(UserRequestPayload user);
 
+    ResponsePayload createOwner(UserRequestPayload user);
+
     List<UserDTO> getAllOwnerUser();
+
+    List<UserDTO> getAllUsersByOwner();
+
+    ResponsePayload updateUser(Long idUser, UserRequestPayload user);
 
 }
 

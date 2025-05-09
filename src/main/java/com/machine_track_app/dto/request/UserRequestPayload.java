@@ -18,9 +18,13 @@ public class UserRequestPayload {
     private String email;
     private String phone;
     private Long idOwner;
+    private Long idEmployee;
     private Integer idRole;
     private Long idMunicipality;
     private Integer idPosition;
-    private int idState;
+    private Integer idState;
+    private String ownerName;
+    private String ownerIdentificationType;
+    private String ownerIdentification;
 
 }

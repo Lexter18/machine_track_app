@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
 
@@ -32,6 +32,12 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/byOwner")
+    public ResponseEntity<List<?>> getAllUsersByOwner() {
+        List<UserDTO> users = userService.getAllUsersByOwner();
+        return ResponseEntity.ok(users);
+    }
+
     @GetMapping("/roles")
     public ResponseEntity<List<?>> getAllRoles() {
         List<RoleDTO> roles = roleService.getRoles();
@@ -44,10 +50,22 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
-    @PostMapping("/manager")
+    @PostMapping("/owner")
+    public ResponseEntity<?> ownerManager(@RequestBody UserRequestPayload user) {
+        var createdUser = userService.createOwner(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    }
+
+    @PostMapping("/user")
     public ResponseEntity<?> userManager(@RequestBody UserRequestPayload user) {
         var createdUser = userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    }
+
+    @PutMapping("/owner/{idUser}")
+    public ResponseEntity<?> updateOwner(@PathVariable Long idUser, @RequestBody UserRequestPayload user) {
+        var result = userService.updateUser(idUser, user);
+        return ResponseEntity.status(result.getStatusCode()).body(result);
     }
 
 }

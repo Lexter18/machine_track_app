@@ -38,13 +38,25 @@ public class SpringSecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(authRules -> authRules
-                        .requestMatchers(HttpMethod.POST, "/api/users/manager").hasRole(RolesEnum.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/users/roles")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/owner").hasRole(RolesEnum.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/users/owner/**")
                         .hasAnyRole(RolesEnum.OWNER.name(), RolesEnum.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/users/owners").hasRole(RolesEnum.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/owners").hasRole(RolesEnum.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/locations/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/users/initialRegistration").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/byOwner").hasRole(RolesEnum.OWNER.name())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/user").hasRole(RolesEnum.OWNER.name())
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/roles")
+                        .hasAnyRole(RolesEnum.OWNER.name(), RolesEnum.ADMIN.name())
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/states")
+                        .hasAnyRole(RolesEnum.OWNER.name(), RolesEnum.ADMIN.name())
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/owners").hasRole(RolesEnum.ADMIN.name())
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/owners").hasRole(RolesEnum.ADMIN.name())
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/locations/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/initialRegistration").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilter(new JwtAuthenticationFilter(authenticationConfiguration.getAuthenticationManager()))

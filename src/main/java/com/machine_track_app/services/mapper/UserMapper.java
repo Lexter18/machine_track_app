@@ -36,6 +36,7 @@ public class UserMapper {
                 .municipality(toMunicipalityDto(employee.getMunicipality()))
                 .state(toStateDto(employee.getState()))
                 .position(toPositionDTO(employee.getPosition()))
+                .ownerInitialDetail(employee.getOwnerInitialDetail())
                 .build();
     }
 

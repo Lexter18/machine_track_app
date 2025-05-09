@@ -25,4 +25,12 @@ public enum RolesEnum {
                 .map(RolesEnum::getVisibleRolIds)
                 .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado: " + roleId));
     }
+
+    public static String getRoleNameById(Integer roleId) {
+        return Arrays.stream(values())
+                .filter(role -> role.rol.equals(roleId))
+                .findFirst()
+                .map(Enum::name)
+                .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado: " + roleId));
+    }
 }

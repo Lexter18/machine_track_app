@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/owners")
+@RequestMapping("/api/v1/owners")
 public class OwnerController {
 
     private final OwnerService ownerService;

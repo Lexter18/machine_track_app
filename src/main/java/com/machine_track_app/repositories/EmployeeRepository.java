@@ -15,8 +15,16 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     long countByEmailAndStateIdStateIsNot(String email, Integer excludedStateId);
 
+    long countByEmailAndIdEmployeeIsNotAndStateIdStateIsNot(String email, Long IdEmployee, Integer excludedStateId);
+
     default long countByEmail(String email) {
         return countByEmailAndStateIdStateIsNot(email,
+                DELETED.getState());
+    }
+
+    default long countByEmailIdEmployeeIsNot(String email, Long IdEmployee) {
+        return countByEmailAndIdEmployeeIsNotAndStateIdStateIsNot(email,
+                IdEmployee,
                 DELETED.getState());
     }
 
